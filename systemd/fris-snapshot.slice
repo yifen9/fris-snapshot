@@ -1,0 +1,7 @@
+[Unit]
+Description=FRIS collection resources
+
+[Slice]
+MemoryHigh=14G
+MemoryMax=16G
+IOWeight=50

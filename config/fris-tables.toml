@@ -1,0 +1,484 @@
+threads = 8
+winner_rows = 2000000
+
+[[tables]]
+name = "ro"
+entity = "research_output"
+rows = "."
+columns = [
+  ["kind", "name()"],
+  ["data_provider", "dataProvider"],
+  ["data_provider_id", "dataProviderId"],
+  ["external", "external"],
+  ["hidden", "hidden"],
+  ["state", "state"],
+  ["created", "created"],
+  ["last_modified", "lastModified"],
+  ["last_provider_update", "lastDataProviderUpdate"],
+  ["root_org", "rootOrganisationUuid"],
+  ["publication_date", "publicationDate"],
+  ["publication_year", "publicationYear"],
+  ["type", "researchOutput/associationType@term"],
+  ["type_parent", "researchOutput/associationType/parent"],
+  ["referee", "refereeType@term"],
+  ["status", "publicationStatus@term"],
+  ["open_access", "open_access_label/associationType@term"],
+  ["collaboration", "collaboration/associationType@term"],
+  ["language", "originalLanguage@term"],
+  ["title_en", "title/texts/text[@locale=en]"],
+  ["title_nl", "title/texts/text[@locale=nl]"],
+  ["title_any", "title/texts/text"],
+  ["journal", "journal@uuid"],
+  ["journal_issn", "journal/issn"],
+  ["journal_volume", "journalVolume"],
+  ["journal_issue", "journalIssue"],
+  ["book_title", "bookTitle"],
+  ["isbn", "ISBN"],
+  ["pages", "pages"],
+  ["doi", "sources/source[@authority=DOI]"],
+  ["unpaywall_doi", "unpaywallDoi/doi"],
+  ["patent_number", "patentNumber"],
+  ["abstract_en", "researchAbstract/texts/text[@locale=en]"],
+  ["participants", "count(participants/participant)"],
+  ["projects", "count(researchOutputProjects/researchOutputProject)"],
+]
+
+[[tables]]
+name = "ro_source"
+entity = "research_output"
+rows = "sources/source"
+columns = [
+  ["source_id", "@id"],
+  ["authority", "@authority"],
+  ["value", "."],
+]
+
+[[tables]]
+name = "ro_participant"
+entity = "research_output"
+rows = "participants/participant"
+columns = [
+  ["participant_id", "@id"],
+  ["role", "associationType@term"],
+  ["first_name", "name/firstName"],
+  ["last_name", "name/lastName"],
+  ["person", "person@uuid"],
+  ["person_external", "person/external"],
+  ["person_provider", "person/dataProvider"],
+  ["organisation", "organisation@uuid"],
+  ["organisation_external", "organisation/external"],
+  ["assignments", "count(assignment)"],
+  ["assign_person", "assignment/person@uuid"],
+  ["assign_org", "assignment/organisation@uuid"],
+  ["assign_org_root", "assignment/organisation/rootOrganisationUuid"],
+  ["person_first_name", "person/name/firstName|assignment/person/name/firstName"],
+  ["person_last_name", "person/name/lastName|assignment/person/name/lastName"],
+  ["role_parent", "associationType/parent"],
+]
+
+[[tables]]
+name = "ro_assignment"
+entity = "research_output"
+rows = "participants/participant/assignment"
+columns = [
+  ["participant_id", "../@id"],
+  ["assignment_id", "@id"],
+  ["role", "associationType@term"],
+  ["person", "person@uuid"],
+  ["organisation", "organisation@uuid"],
+  ["organisation_external", "organisation/external"],
+  ["organisation_root", "organisation/rootOrganisationUuid"],
+  ["organisation_name_en", "organisation/name/texts/text[@locale=en]"],
+  ["organisation_name_nl", "organisation/name/texts/text[@locale=nl]"],
+  ["person_external", "person/external"],
+  ["person_first_name", "person/name/firstName"],
+  ["person_last_name", "person/name/lastName"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+]
+
+[[tables]]
+name = "ro_project"
+entity = "research_output"
+rows = "researchOutputProjects/researchOutputProject"
+columns = [
+  ["project", "project@uuid"],
+  ["role", "associationType@term"],
+]
+
+[[tables]]
+name = "ro_classification"
+entity = "research_output"
+rows = "*[@term]|*/*[@term]|*/*/associationType"
+columns = [
+  ["element", "name()"],
+  ["parent", "../name()"],
+  ["grandparent", "../../name()"],
+  ["scheme", "@schemeId"],
+  ["term", "@term"],
+]
+
+[[tables]]
+name = "project"
+entity = "project"
+rows = "."
+columns = [
+  ["data_provider", "dataProvider"],
+  ["data_provider_id", "dataProviderId"],
+  ["external", "external"],
+  ["hidden", "hidden"],
+  ["state", "state"],
+  ["created", "created"],
+  ["last_modified", "lastModified"],
+  ["root_org", "rootOrganisationUuid"],
+  ["acronym", "acronym"],
+  ["name_en", "name/texts/text[@locale=en]"],
+  ["name_nl", "name/texts/text[@locale=nl]"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+  ["types", "join(projectTypes/type@term)"],
+  ["call_year", "projectCall/year"],
+  ["call_code", "projectCall/fundingCode@code"],
+  ["participants", "count(participants/participant)"],
+  ["organisations", "count(projectOrganisations/projectOrganisation)"],
+  ["fundings", "count(projectFunding/projectFunding)"],
+]
+
+[[tables]]
+name = "project_participant"
+entity = "project"
+rows = "participants/participant"
+columns = [
+  ["participant_id", "@id"],
+  ["role", "associationType@term"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+  ["first_name", "name/firstName"],
+  ["last_name", "name/lastName"],
+  ["person", "person@uuid"],
+  ["organisation", "organisation@uuid"],
+  ["organisation_external", "organisation/external"],
+  ["organisation_provider", "organisation/dataProvider"],
+  ["assign_person", "assignment/person@uuid"],
+  ["assign_organisation", "assignment/organisation@uuid"],
+  ["assign_org_root", "assignment/organisation/rootOrganisationUuid"],
+  ["assign_org_external", "assignment/organisation/external"],
+  ["organisation_root", "organisation/rootOrganisationUuid"],
+  ["country", "physicalAddress/physicalAddress/country@term"],
+  ["assign_role", "assignment/associationType@term"],
+  ["assign_start", "assignment/startDate"],
+  ["assign_end", "assignment/endDate"],
+]
+
+[[tables]]
+name = "project_organisation"
+entity = "project"
+rows = "projectOrganisations/projectOrganisation"
+columns = [
+  ["role", "associationType@term"],
+  ["organisation", "organisation@uuid"],
+  ["organisation_external", "organisation/external"],
+  ["organisation_provider", "organisation/dataProvider"],
+  ["organisation_root", "organisation/rootOrganisationUuid"],
+  ["organisation_type", "organisation/organisationType@term"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+]
+
+[[tables]]
+name = "project_funding"
+entity = "project"
+rows = "projectFunding/projectFunding"
+columns = [
+  ["funding_id", "@id"],
+  ["funding_code", "fundingCode@code"],
+  ["funding_role", "fundingRole@term"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+  ["budget_lines", "count(budgetLines/budgetLine)"],
+]
+
+[[tables]]
+name = "project_budget"
+entity = "project"
+rows = "projectFunding/projectFunding/budgetLines/budgetLine"
+columns = [
+  ["funding_id", "../../@id"],
+  ["funding_code", "../../fundingCode@code"],
+  ["budget_type", "budgetType@term"],
+  ["spent_type", "spentBudgetType@term"],
+  ["value", "value"],
+  ["year", "projectFundingBudgetYear"],
+]
+
+[[tables]]
+name = "project_beneficiary"
+entity = "project"
+rows = "projectFunding/projectFunding/Beneficiary"
+columns = [
+  ["funding_id", "../@id"],
+  ["organisation", "organisation|assignment/organisation@uuid"],
+  ["organisation_root", "organisation/rootOrganisationUuid|assignment/organisation/rootOrganisationUuid"],
+  ["person", "assignment/person@uuid"],
+  ["role", "assignment/associationType@term"],
+  ["start", "assignment/startDate"],
+  ["end", "assignment/endDate"],
+]
+
+[[tables]]
+name = "project_funding_id"
+entity = "project"
+rows = "fundingIdentifiers/fundingIdentifier"
+columns = [
+  ["authority", "@authority"],
+  ["value", "."],
+]
+
+[[tables]]
+name = "project_source"
+entity = "project"
+rows = "sources/source"
+columns = [
+  ["authority", "@authority"],
+  ["value", "."],
+]
+
+[[tables]]
+name = "project_classification"
+entity = "project"
+rows = "*[@term]|*/*[@term]|*/*/associationType"
+columns = [
+  ["element", "name()"],
+  ["parent", "../name()"],
+  ["grandparent", "../../name()"],
+  ["scheme", "@schemeId"],
+  ["term", "@term"],
+]
+
+[[tables]]
+name = "organisation"
+entity = "organisation"
+rows = "."
+columns = [
+  ["data_provider", "dataProvider"],
+  ["data_provider_id", "dataProviderId"],
+  ["external", "external"],
+  ["hidden", "hidden"],
+  ["state", "state"],
+  ["created", "created"],
+  ["last_modified", "lastModified"],
+  ["root_org", "rootOrganisationUuid"],
+  ["name_en", "name/texts/text[@locale=en]"],
+  ["name_nl", "name/texts/text[@locale=nl]"],
+  ["acronym", "acronyms/acronym"],
+  ["type", "organisationType@term"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+  ["country", "physicalAddresses/addressAssociation/physicalAddress/country@term"],
+  ["city", "physicalAddresses/addressAssociation/physicalAddress/city"],
+  ["ror", "sources/source[@authority=ROR ID]"],
+  ["grid", "sources/source[@authority=GRID ID]"],
+  ["vkbo", "sources/source[@authority=VKBO ID]"],
+]
+
+[[tables]]
+name = "organisation_relation"
+entity = "organisation"
+rows = "relatedOrganisations/organisationRelation"
+columns = [
+  ["role", "associationType@term"],
+  ["other", "organisation@uuid"],
+  ["other_external", "organisation/external"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+]
+
+[[tables]]
+name = "organisation_source"
+entity = "organisation"
+rows = "sources/source"
+columns = [
+  ["authority", "@authority"],
+  ["value", "."],
+]
+
+[[tables]]
+name = "organisation_address"
+entity = "organisation"
+rows = "physicalAddresses/addressAssociation"
+columns = [
+  ["role", "associationType@term"],
+  ["country", "physicalAddress/country@term"],
+  ["city", "physicalAddress/city"],
+  ["postal_code", "physicalAddress/postalCode"],
+  ["line1", "physicalAddress/addressLine1"],
+  ["line2", "physicalAddress/addressLine2"],
+  ["line3", "physicalAddress/addressLine3"],
+  ["latitude", "physicalAddress/latitude"],
+  ["longitude", "physicalAddress/longitude"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+]
+
+[[tables]]
+name = "organisation_classification"
+entity = "organisation"
+rows = "*[@term]|*/*[@term]|*/*/associationType"
+columns = [
+  ["element", "name()"],
+  ["parent", "../name()"],
+  ["grandparent", "../../name()"],
+  ["scheme", "@schemeId"],
+  ["term", "@term"],
+]
+
+[[tables]]
+name = "person"
+entity = "person"
+rows = "."
+columns = [
+  ["data_provider", "dataProvider"],
+  ["data_provider_id", "dataProviderId"],
+  ["external", "external"],
+  ["hidden", "hidden"],
+  ["state", "state"],
+  ["created", "created"],
+  ["last_modified", "lastModified"],
+  ["root_org", "rootOrganisationUuid"],
+  ["first_name", "name/firstName"],
+  ["last_name", "name/lastName"],
+  ["orcid", "sources/source[@authority=ORCID]"],
+  ["affiliations", "count(personOrganisations/personOrganisation)"],
+]
+
+[[tables]]
+name = "person_organisation"
+entity = "person"
+rows = "personOrganisations/personOrganisation"
+columns = [
+  ["role", "associationType@term"],
+  ["organisation", "organisation@uuid"],
+  ["organisation_root", "organisation/rootOrganisationUuid"],
+  ["organisation_external", "organisation/external"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+]
+
+[[tables]]
+name = "person_source"
+entity = "person"
+rows = "sources/source"
+columns = [
+  ["authority", "@authority"],
+  ["value", "."],
+]
+
+[[tables]]
+name = "journal"
+entity = "journal"
+rows = "."
+columns = [
+  ["data_provider", "dataProvider"],
+  ["data_provider_id", "dataProviderId"],
+  ["created", "created"],
+  ["last_modified", "lastModified"],
+  ["title", "title"],
+  ["issn", "issn"],
+  ["eissn", "electronicIssn"],
+  ["publisher", "publisher"],
+  ["asjc", "join(asjcCodes/*@term)"],
+  ["ecoom_types", "join(ecoomTypes/*@term)"],
+]
+
+[[tables]]
+name = "journal_source"
+entity = "journal"
+rows = "sources/source"
+columns = [
+  ["authority", "@authority"],
+  ["value", "."],
+]
+
+[[tables]]
+name = "funding_code"
+entity = "funding_code"
+rows = "."
+columns = [
+  ["code", "@code"],
+  ["parent", "parent@code"],
+  ["acronym", "acronym"],
+  ["definition", "definition"],
+  ["money_stream", "moneyStreamCode@term"],
+  ["belspo_category", "belspoCategory@term"],
+  ["policy_levels", "join(policyLevels/policyLevel@term)"],
+  ["contract_types", "join(contractTypes/contractType@term)"],
+  ["research_types", "join(researchTypes/*@term)"],
+  ["effective", "effectiveDate"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+  ["deprecated", "deprecatedDate"],
+]
+
+[[tables]]
+name = "funding_code_organisation"
+entity = "funding_code"
+rows = "fundingOrganisationAssociations/fundingOrganisationAssociation"
+columns = [
+  ["role", "associationType@term"],
+  ["organisation", "organisation@uuid"],
+  ["organisation_name", "organisation/name/texts/text[@locale=en]"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+]
+
+[[tables]]
+name = "dataset"
+entity = "dataset"
+rows = "."
+columns = [
+  ["data_provider", "dataProvider"],
+  ["external", "external"],
+  ["created", "created"],
+  ["last_modified", "lastModified"],
+  ["root_org", "rootOrganisationUuid"],
+  ["title_en", "title/texts/text[@locale=en]"],
+  ["doi", "sources/source[@authority=DOI]"],
+]
+
+[[tables]]
+name = "dataset_participant"
+entity = "dataset"
+rows = "participants/participant|*/*/assignment"
+columns = [
+  ["element", "name()"],
+  ["role", "associationType@term"],
+  ["person", "person@uuid"],
+  ["organisation", "organisation@uuid"],
+]
+
+[[tables]]
+name = "infrastructure"
+entity = "infrastructure"
+rows = "."
+columns = [
+  ["data_provider", "dataProvider"],
+  ["created", "created"],
+  ["last_modified", "lastModified"],
+  ["root_org", "rootOrganisationUuid"],
+  ["name_en", "name/texts/text[@locale=en]"],
+  ["acronym", "acronym"],
+]
+
+[[tables]]
+name = "infrastructure_participant"
+entity = "infrastructure"
+rows = "*/*/assignment"
+columns = [
+  ["group", "../../name()"],
+  ["participant_id", "../@id"],
+  ["role", "../associationType@term"],
+  ["person", "person@uuid"],
+  ["organisation", "organisation@uuid"],
+  ["start", "startDate"],
+  ["end", "endDate"],
+]

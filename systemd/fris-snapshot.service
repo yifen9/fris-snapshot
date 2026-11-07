@@ -1,0 +1,21 @@
+[Unit]
+Description=FRIS collection
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+RemainAfterExit=yes
+ExecStart=/usr/bin/env -C %Y/.. target/release/fris-snapshot harvest
+ExecStop=/usr/bin/env -C %Y/.. target/release/fris-snapshot stop
+Restart=on-failure
+RestartSec=15min
+TimeoutStartSec=infinity
+TimeoutStopSec=2min
+KillMode=mixed
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+Slice=fris-snapshot.slice
+Environment=RAYON_NUM_THREADS=4
+StandardOutput=append:%h/Documents/data/fris/log/console.log
+StandardError=inherit

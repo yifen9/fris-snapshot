@@ -1,0 +1,50 @@
+[package]
+name = "fris-snapshot"
+version = "0.1.0"
+edition = "2021"
+authors = ["yifen9 <mail@yifen9.li>"]
+license = "MIT"
+publish = false
+
+[dependencies]
+anyhow = "1"
+arrow-array = "60"
+arrow-schema = "60"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+clap = { version = "4", features = ["derive"] }
+parquet = { version = "60", default-features = false, features = ["arrow", "zstd"] }
+rayon = "1"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls", "cookies"] }
+roxmltree = "0.21"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+toml = "1"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_System_Threading"] }
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+module_name_repetitions = "allow"
+cast_precision_loss = "allow"
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+unwrap_used = "deny"
+
+[profile.dev]
+debug = false
+strip = "debuginfo"
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 4

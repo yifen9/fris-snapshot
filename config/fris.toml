@@ -1,0 +1,113 @@
+root = "~/Documents/data/fris"
+base = "https://frisr4.researchportal.be/ws/"
+concurrency = 4
+min_interval_ms = 1000
+bandwidth = "0"
+timeout_s = 900
+part_pages = 40
+part_bytes = 268435456
+fault_retries = 4
+min_page_size = 1
+backoff_cap_s = 600
+changes_margin_s = 3600
+slow_ms = 30000
+fast_ms = 8000
+grow_after = 20
+locale = "en"
+meta_services = ["ClassificationSchemeServiceFRIS"]
+meta_skip = ["getChanges", "getIngestionLogs", "getClassificationSchemes"]
+
+[[entities]]
+name = "research_output"
+service = "ResearchOutputServiceFRIS"
+op = "getResearchOutput"
+page_size = 49
+mode = "keyset"
+partition = "provider"
+order = "entity.lastModified"
+priority = 0
+split_above = 40000
+changes = ["RESEARCH_OUTPUT", "PATENT"]
+
+[[entities]]
+name = "project"
+service = "ProjectServiceFRIS"
+op = "getProjects"
+page_size = 500
+mode = "keyset"
+partition = "provider"
+order = "entity.lastModified"
+priority = 1
+split_above = 20000
+changes = ["PROJECT"]
+
+[[entities]]
+name = "organisation"
+service = "OrganisationServiceFRIS"
+op = "getOrganisations"
+page_size = 2000
+mode = "keyset"
+partition = "provider"
+order = "entity.lastModified"
+priority = 2
+split_above = 100000
+changes = ["ORGANISATION"]
+references = [
+  ["ro_assignment", "organisation"],
+  ["person_organisation", "organisation"],
+  ["organisation_relation", "other"],
+]
+
+[[entities]]
+name = "dataset"
+service = "DatasetServiceFRIS"
+op = "getDatasets"
+page_size = 500
+mode = "keyset"
+partition = "provider"
+order = "entity.lastModified"
+priority = 3
+changes = ["DATASET"]
+
+[[entities]]
+name = "infrastructure"
+service = "InfrastructureServiceFRIS"
+op = "getInfrastructures"
+page_size = 500
+mode = "keyset"
+partition = "provider"
+order = "entity.lastModified"
+priority = 3
+changes = ["INFRASTRUCTURE"]
+
+[[entities]]
+name = "funding_code"
+service = "FundingCodeServiceFRIS"
+op = "getFundingCodes"
+page_size = 1000
+mode = "session"
+partition = "none"
+order = "entity.created"
+priority = 3
+
+[[entities]]
+name = "journal"
+service = "JournalServicePublic"
+op = "getJournals"
+page_size = 2000
+mode = "keyset"
+partition = "none"
+order = "entity.lastModified"
+priority = 4
+changes = ["JOURNAL"]
+
+[[entities]]
+name = "person"
+service = "PersonServiceFRIS"
+op = "getPersons"
+page_size = 2000
+mode = "keyset"
+partition = "provider"
+order = "entity.lastModified"
+priority = 5
+changes = ["PERSON"]
